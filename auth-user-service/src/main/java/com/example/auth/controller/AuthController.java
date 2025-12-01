@@ -6,6 +6,7 @@ import com.example.auth.repository.UserRepository;
 import com.example.auth.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 

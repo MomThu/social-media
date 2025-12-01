@@ -1,55 +1,51 @@
 package com.example.post.controller;
 
-import com.example.post.model.Comment;
-import com.example.post.model.Post;
-import com.example.post.repository.PostRepository;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import java.util.HashMap;
 
-import java.time.Instant;
-import java.util.List;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@RestController
+import com.example.common.web.APIResponse;
+import com.example.post.dto.PostCommentDto;
+import com.example.post.dto.PostRequestDto;
+import com.example.post.dto.PostResponseDto;
+import com.example.post.dto.SearchPostRequestDto;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+
+@Tag(name = "Post Feed Service")
 @RequestMapping("/api/posts")
-public class PostController {
-    private final PostRepository repo;
+public interface PostController {
+    // create post
+    @PostMapping(path = "/create", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    APIResponse<PostResponseDto> create(@Valid @RequestBody PostRequestDto req);
 
-    public PostController(PostRepository repo) { this.repo = repo; }
+    // search posts
+    @PostMapping(path = "/findData", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    APIResponse<HashMap<String, Object>> findData(@Valid @RequestBody SearchPostRequestDto req);
 
-    @PostMapping
-    public Post create(@RequestBody Post p) {
-        p.setCreatedAt(Instant.now());
-        p.setLikes(0);
-        return repo.save(p);
-    }
-
-    @GetMapping
-    public List<Post> list() {
-        return repo.findAll();
-    }
-
+    // get post by id
     @GetMapping("/{id}")
-    public ResponseEntity<Post> get(@PathVariable String id) {
-        return repo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
-    }
+    APIResponse<PostResponseDto> getById(@PathVariable String id);
 
-    @PostMapping("/{id}/like")
-    public ResponseEntity<?> like(@PathVariable String id) {
-        return repo.findById(id).map(p -> {
-            p.setLikes(p.getLikes() + 1);
-            repo.save(p);
-            return ResponseEntity.ok().build();
-        }).orElse(ResponseEntity.notFound().build());
-    }
+    // update post
+    @PostMapping(path = "/{id}/update", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    APIResponse<PostResponseDto> update(@PathVariable String id, @Valid @RequestBody PostRequestDto req);
 
-    @PostMapping("/{id}/comment")
-    public ResponseEntity<?> comment(@PathVariable String id, @RequestBody Comment c) {
-        return repo.findById(id).map(p -> {
-            if (p.getComments() == null) p.setComments(new java.util.ArrayList<>());
-            c.setCreatedAt(Instant.now());
-            p.getComments().add(c);
-            repo.save(p);
-            return ResponseEntity.ok().build();
-        }).orElse(ResponseEntity.notFound().build());
-    }
+    // delete post
+    @PostMapping(path = "/{id}/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    APIResponse<Void> delete(@PathVariable String id);
+
+    // like function
+    @PostMapping(path = "/{id}/like", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)  
+    APIResponse<Void> like(@PathVariable String id);
+
+    // comment function
+    @PostMapping(path = "/{id}/comment", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    APIResponse<String> comment(@PathVariable String id, @Valid @RequestBody PostCommentDto req);
 }
