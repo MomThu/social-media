@@ -13,5 +13,4 @@ import com.example.common.model.Auditable;
 public class Comment extends Auditable {
     private String userId;
     private String text;
-    private Instant createdAt;
 }

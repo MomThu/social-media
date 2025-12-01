@@ -1,6 +1,8 @@
 package com.example.post.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -8,6 +10,7 @@ import com.example.post.dto.PostCommentDto;
 import com.example.post.dto.PostRequestDto;
 import com.example.post.dto.PostResponseDto;
 import com.example.post.dto.SearchPostRequestDto;
+import com.example.post.model.Post;
 import com.example.post.repository.PostRepository;
 import com.example.post.service.PostService;
 
@@ -30,50 +33,79 @@ public class PostServiceImpl implements PostService {
         }
     }
 
-    
     @Override
     public PostResponseDto getById(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getById'");
+        Optional<Post> postOpt = postRepository.findById(id);
+        if (postOpt.isPresent()) {
+            Post post = postOpt.get();
+            // TODO: convert Post to PostResponseDto
+            return new PostResponseDto();
+        }
+        return null;
     }
 
     @Override
     public PostResponseDto update(String id, PostRequestDto req) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        Optional<Post> postOpt = postRepository.findById(id);
+        if (postOpt.isPresent()) {
+            Post post = postOpt.get();
+            post.setCaption(req.getCaption());
+            post.setMediaUrls(java.util.Arrays.asList(req.getMediaUrls()));
+            postRepository.save(post);
+            // TODO: convert Post to PostResponseDto
+            return new PostResponseDto();
+        }
+        return null;
     }
 
     @Override
     public void delete(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        postRepository.deleteById(id);
     }
-
 
     @Override
     public PostResponseDto create(PostRequestDto req) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
+        validatePostRequest(req);
+        Post post = Post.builder()
+            // .authorId(req.getAuthorId())
+            .caption(req.getCaption())
+            .mediaUrls(java.util.Arrays.asList(req.getMediaUrls()))
+            .likes(req.getLikes())
+            .comments(new ArrayList<>())
+            .build();
+        postRepository.save(post);
+        // TODO: convert Post to PostResponseDto
+        return new PostResponseDto();
     }
-
 
     @Override
     public HashMap<String, Object> findData(SearchPostRequestDto req) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'findData'");
+        // TODO: implement search logic
+        return new HashMap<>();
     }
-
 
     @Override
     public String comment(String id, PostCommentDto c) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'comment'");
+        Optional<Post> postOpt = postRepository.findById(id);
+        if (postOpt.isPresent()) {
+            Post post = postOpt.get();
+            if (post.getComments() == null) {
+                post.setComments(new ArrayList<>());
+            }
+            // post.getComments().add(c);
+            postRepository.save(post);
+            return c.getId();
+        }
+        return null;
     }
-
 
     @Override
     public void like(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'like'");
+        Optional<Post> postOpt = postRepository.findById(id);
+        if (postOpt.isPresent()) {
+            Post post = postOpt.get();
+            post.setLikes(post.getLikes() + 1);
+            postRepository.save(post);
+        }
     }
 }
