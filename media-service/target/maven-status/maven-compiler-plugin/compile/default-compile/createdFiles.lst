@@ -1,0 +1,5 @@
+com/example/media/model/Media.class
+com/example/media/model/Media$MediaBuilder.class
+com/example/media/repository/MediaRepository.class
+com/example/media/controller/MediaController.class
+com/example/media/MediaServiceApplication.class
