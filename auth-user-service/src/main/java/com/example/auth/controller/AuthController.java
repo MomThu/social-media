@@ -4,54 +4,95 @@ import com.example.auth.dto.*;
 import com.example.auth.model.User;
 import com.example.auth.repository.UserRepository;
 import com.example.auth.security.JwtUtil;
-import org.springframework.http.ResponseEntity;
+import com.example.auth.service.EmailVerificationService;
+import com.example.common.web.APIResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
+@Slf4j
 public class AuthController {
 
     private final UserRepository repo;
     private final BCryptPasswordEncoder encoder;
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
-
-    public AuthController(UserRepository repo,
-                          BCryptPasswordEncoder encoder,
-                          AuthenticationManager authManager,
-                          JwtUtil jwtUtil) {
-        this.repo = repo;
-        this.encoder = encoder;
-        this.authManager = authManager;
-        this.jwtUtil = jwtUtil;
-    }
+    private final EmailVerificationService emailVerificationService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest req) {
+    public APIResponse<?> register(@RequestBody RegisterRequest req) {
         if (repo.existsByUsername(req.getUsername()) || repo.existsByEmail(req.getEmail())) {
-            return ResponseEntity.badRequest().body("Username or email already exists");
+            return APIResponse.error(
+                HttpStatus.CONFLICT.value(),
+                "Username or email already exists"
+            );
         }
+        
         User u = User.builder()
                 .username(req.getUsername())
                 .email(req.getEmail())
                 .password(encoder.encode(req.getPassword()))
+                .emailVerified(false)
                 .build();
+        
         repo.save(u);
-        String token = jwtUtil.generateToken(u.getUsername());
-        return ResponseEntity.ok(new AuthResponse(token));
+        
+        // Send verification email
+        emailVerificationService.sendVerificationEmail(u);
+        
+        log.info("New user registered: {}", req.getEmail());
+        
+        return APIResponse.ok(
+            "Registration successful. Please check your email to verify your account.",
+            Map.of("message", "Verification email sent")
+        );
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody com.example.auth.dto.AuthRequest req) {
+    public APIResponse<?> login(@RequestBody AuthRequest req) {
         try {
             authManager.authenticate(new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword()));
+            
+            User user = repo.findByUsername(req.getUsername())
+                    .orElseThrow(() -> new IllegalArgumentException("User not found"));
+            
+            if (!user.isEmailVerified()) {
+                return APIResponse.error(
+                    HttpStatus.FORBIDDEN.value(),
+                    "Please verify your email before logging in"
+                );
+            }
+            
             String token = jwtUtil.generateToken(req.getUsername());
-            return ResponseEntity.ok(new AuthResponse(token));
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", token);
+            response.put("user", Map.of(
+                "id", user.getId(),
+                "email", user.getEmail(),
+                "username", user.getUsername()
+            ));
+            
+            return APIResponse.ok(
+                "Login successful",
+                response
+            );
         } catch (AuthenticationException ex) {
-            return ResponseEntity.status(401).body("Invalid credentials");
+            log.warn("Login failed for user: {}", req.getUsername());
+            return APIResponse.error(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Invalid credentials"
+            );
         }
     }
 }

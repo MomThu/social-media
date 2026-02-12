@@ -3,6 +3,7 @@ package com.example.auth.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.Set;
 
 @Entity
@@ -27,6 +28,20 @@ public class User {
 
     private String bio;
     private String avatarUrl;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean emailVerified = false;
+
+    @Column(name = "oauth_provider")
+    private String oauthProvider; // google, facebook, etc.
+
+    @Column(name = "oauth_id")
+    private String oauthId;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    @Builder.Default
+    private Instant createdAt = Instant.now();
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_skills", joinColumns = @JoinColumn(name = "user_id"))

@@ -35,4 +35,12 @@ public class APIResponse<T> {
     public static <T> APIResponse<T> ok(String message, T data, String requestId) {
         return new APIResponse<>(HttpStatus.OK.value(), message, data, requestId);
     }
+
+    public static <T> APIResponse<T> error(int code, String message) {
+        return new APIResponse<>(code, message, null);
+    }
+
+    public static <T> APIResponse<T> error(int code, String message, T data) {
+        return new APIResponse<>(code, message, data);
+    }
 }
