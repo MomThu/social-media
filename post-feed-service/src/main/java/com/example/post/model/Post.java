@@ -10,6 +10,7 @@ import com.example.common.model.Auditable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Document(collection = "posts")
@@ -17,12 +18,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(callSuper = false)
 public class Post extends Auditable {
     @Id
     private String id;
     private String authorId;
+    private String authorName;
     private String caption;
     private List<String> mediaUrls;
+    private List<String> likedByUserIds; // track who liked the post
     private int likes;
     private List<Comment> comments;
+    private List<Share> shares; // track shares
+    private int shareCount;
 }

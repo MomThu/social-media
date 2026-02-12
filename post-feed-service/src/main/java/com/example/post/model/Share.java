@@ -1,4 +1,4 @@
-package com.example.post.dto;
+package com.example.post.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,11 +11,8 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostCommentDto {
-    private String id;
+public class Share {
     private String userId;
-    private String userName;
-    private String text;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private Instant sharedAt;
+    private String sharedTo; // could be "feed", "private_message", etc.
 }

@@ -1,6 +1,7 @@
 package com.example.post.controller;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,12 +9,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.common.web.APIResponse;
 import com.example.post.dto.PostCommentDto;
 import com.example.post.dto.PostRequestDto;
 import com.example.post.dto.PostResponseDto;
 import com.example.post.dto.SearchPostRequestDto;
+import com.example.post.dto.FeedRequestDto;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -42,10 +45,22 @@ public interface PostController {
     APIResponse<Void> delete(@PathVariable String id);
 
     // like function
-    @PostMapping(path = "/{id}/like", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)  
-    APIResponse<Void> like(@PathVariable String id);
+    @PostMapping(path = "/{id}/like", produces = MediaType.APPLICATION_JSON_VALUE)  
+    APIResponse<Void> like(@PathVariable String id, @RequestParam String userId);
+
+    // unlike function
+    @PostMapping(path = "/{id}/unlike", produces = MediaType.APPLICATION_JSON_VALUE)  
+    APIResponse<Void> unlike(@PathVariable String id, @RequestParam String userId);
 
     // comment function
     @PostMapping(path = "/{id}/comment", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     APIResponse<String> comment(@PathVariable String id, @Valid @RequestBody PostCommentDto req);
+
+    // share function
+    @PostMapping(path = "/{id}/share", produces = MediaType.APPLICATION_JSON_VALUE)
+    APIResponse<Void> share(@PathVariable String id, @RequestParam String userId, @RequestParam String sharedTo);
+
+    // get personalized feed
+    @PostMapping(path = "/feed/personalized", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    APIResponse<List<PostResponseDto>> getPersonalizedFeed(@Valid @RequestBody FeedRequestDto req);
 }

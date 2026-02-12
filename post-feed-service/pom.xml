@@ -12,7 +12,7 @@
     <spring.boot.version>3.1.0</spring.boot.version>
     <springdoc.version>2.1.0</springdoc.version>
     <mapstruct.version>1.6.2</mapstruct.version>
-    <lombok.version>1.18.42</lombok.version>
+    <lombok.version>1.18.30</lombok.version>
   </properties>
 
   <parent>
@@ -102,6 +102,20 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>1.18.30</version>
+            </path>
+          </annotationProcessorPaths>
+          <forceJavacCompilerUse>true</forceJavacCompilerUse>
+        </configuration>
       </plugin>
     </plugins>
   </build>

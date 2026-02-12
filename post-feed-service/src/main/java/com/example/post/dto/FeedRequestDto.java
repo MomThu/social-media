@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PostRequestDto {
-    private String authorId;
-    private String authorName;
-    private String caption;
-    private String[] mediaUrls;
-    private String requestId;
+public class FeedRequestDto {
+    private String userId;
+    private int page;
+    private int pageSize;
 }
