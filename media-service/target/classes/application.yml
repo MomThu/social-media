@@ -1,7 +1,0 @@
-server:
-  port: 8083
-
-spring:
-  data:
-    mongodb:
-      uri: mongodb://mongodb:27017/mediadb
