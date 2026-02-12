@@ -3,6 +3,8 @@ com/example/post/controller/PostController.class
 com/example/post/dto/PostCommentDto.class
 com/example/post/controller/impl/PostControllerImpl.class
 com/example/post/model/Comment$CommentBuilder.class
+com/example/post/dto/PostResponseDto$CommentDto$CommentDtoBuilder.class
+com/example/post/dto/PostResponseDto$PostResponseDtoBuilder.class
 com/example/post/model/Post.class
 com/example/post/dto/PostRequestDto.class
 com/example/post/dto/SearchPostRequestDto$SearchPostRequestDtoBuilder.class
@@ -12,5 +14,6 @@ com/example/post/model/Comment.class
 com/example/post/service/PostService.class
 com/example/post/dto/PostResponseDto.class
 com/example/post/dto/PostRequestDto$PostRequestDtoBuilder.class
+com/example/post/dto/PostResponseDto$CommentDto.class
 com/example/post/service/impl/PostServiceImpl.class
 com/example/post/PostFeedServiceApplication.class

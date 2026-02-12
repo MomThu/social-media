@@ -1,13 +1,2 @@
-com/example/common/exception/BusinessException.class
-com/example/common/exception/ResourceNotFoundException.class
-com/example/common/web/APIResponse.class
-com/example/common/client/AuthClient.class
-com/example/common/config/CorsConfig.class
-com/example/common/web/ErrorResponse$ErrorResponseBuilder.class
-com/example/common/dto/UserInfo$UserInfoBuilder.class
-com/example/common/dto/UserInfo.class
-com/example/common/exception/UnauthorizedException.class
 com/example/common/model/Auditable.class
-com/example/common/web/ErrorResponse.class
-com/example/common/exception/ValidationException.class
-com/example/common/exception/GlobalExceptionHandler.class
+com/example/common/web/APIResponse.class
